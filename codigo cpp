@@ -1,0 +1,534 @@
+# Proyecto-final-2
+//Registro de Productos
+#include<iostream>
+#include <conio.h>
+#include <string.h>
+#include <fstream>
+#include <stdlib.h>
+//Limpiar pantalla
+#ifdef _WIN32
+#define CLEAR "cls"
+#elif defined(unix)||defined(__unix__)||defined(__unix)||defined(__APPLE__)||defined(__MACH__)
+#define CLEAR "clear"
+#else
+#error "SO no soportado para limpiar pantalla"
+#endif
+using namespace std;
+class menu
+{
+private:
+    char nombre[30];
+    char codigo[30];
+    char precio[30];
+    char provedor[30];
+    char existencias[30];
+
+public:
+    void registrar();
+    void retirar();
+    void modificar_productos();
+    void lista_productos();
+    void menuPrincipal();
+    void detalle_productos();
+    void mostarRegistro(char codigo [30]);
+};
+
+void pausa();
+void error();
+int main()
+{
+    system ("color 0f");
+    menu inicio;
+    inicio.menuPrincipal();
+    return 0;
+}
+void menu::menuPrincipal()
+{
+    int opcion;
+    do
+    {
+        cout<<" \t\t************ REGISTRO DE PRODUCTOS ************\t\n\n";
+        cout<<"\t\t\t1. REGISTRAR PRODUCTO  \n\n";
+        cout<<"\t\t\t2.  BUSCAR PRODUCTO \n\n";
+             cout<<"\t\t\t3. MODIFICAR DATOS\n\n";
+        cout<<"\t\t\t4. SALIR\n\n";
+        cout<<"\t\t\tOpci\242n: ";
+        cin>>opcion;
+        system(CLEAR);
+        switch(opcion)
+        {
+
+        case 1:
+            registrar();
+            break;
+
+        case 2:
+            detalle_productos();
+            break;
+
+        case 3:
+            lista_productos();
+            break;
+
+        case 4:
+            retirar();
+            break;
+
+        case 5:
+            modificar_productos();
+            break;
+
+        case 6:
+            break;
+            
+        default:
+            cout<<"\nHa ingresado una opci\242n invalida\n\n";
+            break;
+        }
+    }
+    while(opcion!=6);
+}
+
+void menu::registrar()
+{
+    ofstream escritura;
+    ifstream verificador;
+    char auxCodigo[30];
+    bool coincidencia=false;
+    verificador.open("productos.txt",ios::in);
+    escritura.open("productos.txt",ios::app);
+    if(escritura.is_open()&&verificador.is_open())
+    {
+        cout<<"\t\t\t\t---REGISTRAR PRODUCTOS---\t\t\t\t\n\n";
+        fflush(stdin);
+        cout<<"Ingresa el c\242digo del producto: ";
+        cin.getline(auxCodigo,30);
+        if(strcmp(auxCodigo,"")==0)
+            do
+            {
+                cout<<"c\242digo del producto no v\240lido!, intentalo nuevamente: ";
+                cin.getline(auxCodigo,30);
+            }
+            while(strcmp(auxCodigo,"")==0);
+        do
+        {
+            verificador.seekg(0);
+            verificador>>existencias;
+            while(!verificador.eof())
+            {
+                verificador>>precio>>codigo>>precio>>provedor;
+
+                if(strcmp(existencias,auxCodigo)==0)
+                {
+                    coincidencia=true;
+                    cout<<"\n\nYa existe un producto con ese c\242digo\n\n";
+                    cout<<"El producto con ese c\242digo es: "<<nombre<<"\n\n";
+                    cout<<"Ingresa un c\242digo v\240lido!: ";
+                    cin.getline(auxCodigo,30);
+                    if(strcmp(auxCodigo,"")==0)
+                        do
+                        {
+                            cout<<"\nc\242digo del producto no v\240lido!, intentalo nuevamente: ";
+                            cin.getline(auxCodigo,30);
+                        }
+                        while(strcmp(auxCodigo,"")==0);
+
+                    break;
+                }
+
+                verificador>>existencias;
+            }
+
+            if(verificador.eof()&&strcmp(auxCodigo,existencias)!=0)
+                coincidencia=false;
+
+        }
+        while(coincidencia==true);
+        system(CLEAR);
+        strcpy(existencias,auxCodigo);
+        cout<<"\t\t\t\t***REGISTRAR EL PRODUCTO***\t\t\t\t\n\n";
+        cout<<"Ingresa si hay existencias : ";
+        cout<<existencias;
+        cout<<"\n\n";
+        fflush(stdin);
+        cout<<"Ingresa el nombre del producto : ";
+        cin.getline(nombre,30);
+        cout<<"\n\n";
+        fflush(stdin);
+        cout<<"Ingresa el  codigo del producto : ";
+        cin.getline(codigo,30);
+        cout<<"\n\n";
+        fflush(stdin);
+        cout<<"Ingresa el precio del producto: ";
+        cin.getline(precio,20);
+        cout<<"\n\n";
+        fflush(stdin);
+        cout<<"Provedor: ";
+        cin.getline(provedor,30);
+        cout<<"\n\n";
+
+        escritura<<existencias<<"\n\n"<<nombre<<"\n\n"<<codigo<<"\n\n"<<precio
+                 <<"\n\n"<<provedor<<"\n\n";
+
+        cout<<"El registro se ha completado correctamente.\n\n";
+    }
+
+    else
+    {
+        error();
+    }
+
+    escritura.close();
+    verificador.close();
+    pausa();
+}
+
+void menu::retirar()
+{
+    ifstream lectura;
+    ofstream auxiliar;
+    bool encontrado=false;
+    char auxCodigo[30];
+    char respuesta[5];
+    lectura.open("productos.txt",ios::in);
+    auxiliar.open("auxiliar.txt",ios::out);
+    cout<<"\t\t\t\t***RETIRAR DE LA LISTA***\t\t\t\t\n\n";
+    if(lectura.is_open()&&auxiliar.is_open())
+    {
+        fflush(stdin);
+        cout<<"Ingresa el c\242digo del producto que deseas retirar: ";
+        cin.getline(auxCodigo,30);
+        lectura>>existencias;
+        while(!lectura.eof())
+        {
+            lectura>>nombre>>codigo>>precio>>provedor;
+            if(strcmp(auxCodigo,existencias)==0)
+            {
+                encontrado=true;
+                cout<<"\n\nRegistro Encontrado\n\n";
+                cout<<"Existencias: "<<existencias<<endl;
+                cout<<"Nombre: "<<nombre<<endl;
+                cout<<"Codigo: "<<codigo<<endl;
+                cout<<"Provedor: "<<provedor<<endl;
+                cout<<"\n\n";
+                cout<<"Realmente deseas retirar de la lista: "<<nombre<<" (s/n)?: ";
+                cin.getline(respuesta,5);
+                if(strcmp(respuesta,"s")==0||strcmp(respuesta,"S")==0||
+                        strcmp(respuesta,"si")==0||strcmp(respuesta,"SI")==0||
+                        strcmp(respuesta,"Si")==0||strcmp(respuesta,"sI")==0)
+                {
+                    cout<<"\n\nEl producto fue retirado correctamente\n\n";
+                }
+
+                else
+                {
+
+                    cout<<"\n\nProducto conservado\n\n";
+                    auxiliar<<existencias<<"\n\n"<<nombre<<"\n\n"<<codigo<<"\n\n"<<precio
+                            <<"\n\n"<<provedor<<"\n\n";
+
+                }
+
+            }
+            else
+            {
+                auxiliar<<existencias<<"\n\n"<<nombre<<"\n\n"<<codigo<<"\n\n"<<precio
+                        <<"\n\n"<<provedor<<"\n\n";
+            }
+            lectura>>existencias;
+        }
+        if(encontrado==false)
+        {
+            cout<<"\n\nNo se encontr\242 el c\242digo: "<<auxCodigo<<"\n\n";
+        }
+
+    }
+    else
+    {
+        error();
+    }
+    lectura.close();
+    auxiliar.close();
+    remove("productos.txt");
+    rename("auxiliar.txt","productos.txt");
+    pausa();
+}
+
+void menu::detalle_productos()
+{
+    char auxCodigo [30];
+    ifstream mostrar;
+    bool encontrado=false;
+    mostrar.open("productos.txt",ios::in);
+    if(mostrar.is_open())
+    {
+        fflush(stdin);
+        cout<<"\t\t\t\t***CONSULTAR DETALLES DE UN PRODUCTO ***\t\t\t\t\n\n";
+        cout<<"Ingresa el c\242digo del producto que deseas consultar detalles: ";
+        cin.getline(auxCodigo,30);
+        mostrar>>existencias;
+        while(!mostrar.eof())
+        {
+            mostrar>>nombre>>codigo>>precio>>provedor;
+            if(strcmp(auxCodigo,existencias)==0)
+            {
+                encontrado=true;
+                cout<<"\n\nRegistro Encontrado\n\n";
+                cout<<"Existencias: "<<existencias<<endl;
+                cout<<"Nombre: "<<nombre<<endl;
+                cout<<"Provedor: "<<provedor<<endl;
+                cout<<"\n\n";
+            }
+
+            mostrar>>existencias;
+        }
+
+        if(encontrado==false)
+        {
+            cout<<"\n\nNo se encontro el registro: "<<auxCodigo<<"\n\n";
+        }
+    }
+
+    else
+    {
+        error();
+    }
+
+    mostrar.close();
+    pausa();
+}
+
+void menu::modificar_productos()
+{
+    ifstream lectura;
+    ifstream verificador;
+    ofstream auxiliar;
+    char auxCodigo[30];
+    char codigoModif[30];
+    char auxNombre[30];
+    char auxCodigos[30];
+    char auxPrecio[20];
+    char auxProvedor[30];
+    bool encontrado=false;
+    bool coincidencia=false;
+    bool mismoCodigo=false;
+    lectura.open("productos.txt",ios::in);
+    verificador.open("productos.txt",ios::in);
+    auxiliar.open("auxiliar.txt",ios::out);
+    cout<<"\t\t\t\t***MODIFICAR LOS DATOS UN PRODUCTO***\t\t\t\t\n\n";
+    if(lectura.is_open()&&verificador.is_open()&&auxiliar.is_open())
+    {
+        fflush(stdin);
+        cout<<"Ingresa el c\242digo del producto que deseas modificar: ";
+        cin.getline(auxCodigo,30);
+
+        if(strcmp(auxCodigo,"")==0)
+        {
+            do
+            {
+                cout<<"c\242digo del producto no v\240lido!, intentalo nuevamente: ";
+                cin.getline(auxCodigo,30);
+            }
+            while(strcmp(auxCodigo,"")==0);
+        }
+
+        strcpy(codigoModif,auxCodigo);
+
+        lectura>>existencias;
+        while(!lectura.eof())
+        {
+            lectura>>nombre>>codigo>>precio>>provedor;
+            if(strcmp(auxCodigo,existencias)==0)
+            {
+                encontrado=true;
+                mostarRegistro(codigoModif);
+
+                cout<<"**********************************************";
+                cout<<"\n\n";
+                cout<<"INGRESE LA NUEVA INFORMACI\242N PARA EL PRODUCTO\n\n";
+                fflush(stdin);
+                cout<<"Ingresa el c\242digo del producto: ";
+                cin.getline(auxCodigo,30);
+                if(strcmp(auxCodigo,codigoModif)==0)
+                {
+                    mismoCodigo=true;
+                }
+                if(mismoCodigo==false)
+                {
+                    do
+                    {
+                        if(strcmp(auxCodigo,codigoModif)==0)
+                        {
+                            coincidencia=false;
+                            break;
+                        }
+                        verificador.seekg(0);
+                        verificador>>existencias;
+                        while(!verificador.eof())
+                        {
+                            verificador>>nombre>>codigo>>precio>>provedor;
+
+                            if(strcmp(existencias,auxCodigo)==0)
+                            {
+                                coincidencia=true;
+                                cout<<"\n\nYa existe un producto con ese c\242digo!\n\n";
+                                cout<<"El producto con ese c\242digo es: "<<nombre<<"\n\n";
+                                cout<<"Ingresa un c\242digo v\240lido!: ";
+                                cin.getline(auxCodigo,30);
+
+                                if(strcmp(auxCodigo,"")==0)
+                                {
+                                    do
+                                    {
+                                        cout<<"\nc\242digo de producto no v\240lido!, ";
+                                        cout<<"intentalo nuevamente: ";
+                                        cin.getline(auxCodigo,30);
+                                    }
+                                    while(strcmp(auxCodigo,"")==0);
+                                }
+                                break;
+                            }
+
+                            verificador>>existencias;
+                        }
+
+                        if(verificador.eof()&&strcmp(auxCodigo,existencias)!=0)
+                        {
+                            coincidencia=false;
+                        }
+
+                    }
+                    while(coincidencia==true);
+                }
+                system(CLEAR);
+                cout<<"***MODIFICAR LOS DATOS DEL PRODUCTO***\n\n";
+                cout<<"Ingresa el c\242digo del PRODUCTO que deseas modificar: ";
+                cout<<codigoModif;
+                mostarRegistro(codigoModif);
+                cout<<"**********************************************";
+                cout<<"\n\n";
+                cout<<"Ingresa la nueva informaci\242n para el producto \n\n";
+                cout<<"Ingresa el c\242digo del producto: ";
+                cout<<auxCodigo;
+                cout<<"\n\n";
+                fflush(stdin);
+                cout<<"Ingresa el nombre del producto: ";
+                cin.getline(auxNombre,30);
+                fflush(stdin);
+                cout<<"\n\n";
+               
+                cout<<"\n\n";
+                fflush(stdin);
+                cout<<"Ingresa el precio: ";
+                cin.getline(auxPrecio,20);
+                cout<<"\n\n";
+                fflush(stdin);
+                cout<<"Ingresa el provedor: ";
+                cin.getline(auxProvedor,30);
+                cout<<"\n\n";
+                auxiliar<<auxCodigo<<"\n\n"<<auxNombre<<"\n\n"<<auxCodigo<<"\n\n"<<auxPrecio
+                        <<"\n\n"<<auxProvedor<<"\n\n";
+                cout<<"El Registro se ha modificado correctamente.\n\n";
+            }
+
+
+            else
+            {
+
+                auxiliar<<existencias<<"\n\n"<<nombre<<"\n\n"<<codigo<<"\n\n"<<precio
+                        <<"\n\n"<<provedor<<"\n\n";
+            }
+
+
+            lectura>>existencias;
+        }
+
+    }
+    else
+    {
+        error();
+    }
+
+    if(encontrado==false)
+    {
+        cout<<"\n\nNo se encontr\242 ning\243n registro con ese c\242digo!\n\n";
+    }
+    lectura.close();
+    verificador.close();
+    auxiliar.close();
+    remove("productos.txt");
+    rename("auxiliar.txt","productos.txt");
+    pausa();
+}
+
+void menu::lista_productos()
+{
+    int i=0;
+    ifstream lectura;
+    lectura.open("productos.txt",ios::in);
+    if(lectura.is_open())
+    {
+        cout<<"\t\t\t\t***LISTA DE PRODUCTO***\t\t\t\t\n\n";
+        lectura>>existencias;
+        while(!lectura.eof())
+        {
+            i++;
+            lectura>>nombre>>codigo>>precio>>provedor;
+            cout<<"Existencias: "<<existencias<<endl;
+            cout<<"Nombre: "<<nombre<<endl;
+            cout<<"provedor: "<<provedor<<endl;
+            cout<<"\n\n";
+            lectura>>existencias;
+        }
+
+        if(i==1)
+            cout<<"Hay un solo producto registrado\n\n";
+
+        else
+
+            cout<<"Hay un total de "<<i<<" productos registrados\n\n";
+    }
+    else
+    {
+        error();
+    }
+    lectura.close();
+    pausa();
+}
+
+void pausa()
+{
+    cout<<"Presiona Enter para continuar...";
+    getch();
+    system(CLEAR);
+}
+void error()
+{
+    cout<<"No se pudo abrir el archivo de registros, asegurese que el archivo se encuentre en\n";
+    cout<<"la misma ubicaci\242n que el programa o que el archivo de texto se llame: \n";
+    cout<<"productos.txt, si el archivo tiene otro nombre ren\242mbrelo al ya mencionado\n\n";
+}
+
+void menu::mostarRegistro(char codigo[30])
+{
+
+    ifstream mostrar;
+    mostrar.open("productos.txt",ios::in);
+    mostrar>>existencias;
+    while(!mostrar.eof())
+    {
+        mostrar>>nombre>>codigo>>precio>>provedor;
+        if(strcmp(codigo,existencias)==0)
+        {
+            cout<<"\n\nRegistro Encontrado\n\n";
+            cout<<"Existencias: "<<existencias<<endl;
+            cout<<"Nombre: "<<nombre<<endl;
+            cout<<"Codigo: "<<codigo<<endl;
+            cout<<"numero: "<<precio<<endl;
+            cout<<"provedor: "<<provedor<<endl;
+            cout<<"\n\n";
+        }
+        mostrar>>existencias;
+    }
+    mostrar.close();
+}
