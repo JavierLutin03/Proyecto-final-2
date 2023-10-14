@@ -532,3 +532,29 @@ void menu::mostarRegistro(char codigo[30])
     }
     mostrar.close();
 }
+
+/* Descripción:
+Este programa en C++ implementa un sistema simple de registro de productos utilizando archivos de texto para almacenar la información. El programa permite al usuario realizar varias operaciones, como registrar un producto, buscar un producto por código, modificar los datos de un producto, listar todos los productos registrados y retirar un producto de la lista.
+
+Funcionalidades:
+menuPrincipal(): Esta función muestra el menú principal del programa y permite al usuario elegir entre diferentes opciones, como registrar un producto, buscar un producto, modificar un producto, retirar un producto o salir del programa.
+
+registrar(): Esta función permite al usuario agregar un nuevo producto al archivo de texto "productos.txt" después de verificar si el código del producto ya existe en el archivo.
+
+retirar(): Esta función busca un producto por su código en el archivo "productos.txt" y ofrece la opción de eliminarlo de la lista. Luego, actualiza el archivo.
+
+detalle_productos(): Esta función busca un producto por su código en el archivo "productos.txt" y muestra los detalles del producto si se encuentra.
+
+modificar_productos(): Esta función busca un producto por su código en el archivo "productos.txt" y permite al usuario modificar la información del producto seleccionado, como el código, nombre, sección, número y fecha de inscripción. Actualiza el archivo con los cambios realizados.
+
+lista_productos(): Esta función muestra todos los productos registrados en el archivo "productos.txt" junto con sus códigos, nombres y fechas de inscripción.
+
+pausa(): Esta función pausa la ejecución del programa y espera a que el usuario presione la tecla Enter para continuar.
+
+error(): Esta función muestra un mensaje de error cuando el programa no puede abrir el archivo "productos.txt" debido a razones como ubicación incorrecta del archivo o nombre incorrecto del archivo.
+
+mostrarRegistro(char codigo[30]): Esta función busca un producto por su código en el archivo "productos.txt" y muestra todos los detalles del producto si se encuentra.
+
+Consideraciones:
+El programa utiliza la biblioteca iostream para entradas y salidas, así como las bibliotecas fstream, string.h, stdlib.h, conio.h para la manipulación de archivos, cadenas de caracteres y limpieza de pantalla, respectivamente.
+*/
